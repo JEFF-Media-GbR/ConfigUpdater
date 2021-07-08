@@ -1,0 +1,29 @@
+stringlists:
+  - "^dont-spawn-on$"
+  - "^only-spawn-in$"
+  - "^disabled-worlds$"
+  - "^disabled-worldguard-regions$"
+  - "^command-aliases-.+$"
+
+ignored:
+  - "^config-version$"
+  - "^plugin-version$"
+
+doublequotes:
+  - "^message-.+$"
+  - "^.*base64.*$"
+  - "^hologram-text$"
+  - "^angelchest-inventory-name$"
+  - "^angelchest-list$"
+  - "^hologram-protected-text$"
+  - "^hologram-protected-countdown-text$"
+  - "^hologram-unprotected-text$"
+  - "^prefix$"
+  - "^link-.+$"
+  - "^gui-.+$"
+  - "^log-filename$"
+  - "^chest-filename$"
+
+escape-newlines:
+  - "^hologram-text$"
+  - "^gui-chest-lore$"
