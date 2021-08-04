@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class ConfigUpdater extends JavaPlugin {
+public class ConfigUpdater {
 
     private final Plugin plugin;
 
@@ -50,7 +50,7 @@ public class ConfigUpdater extends JavaPlugin {
             while ((line = defaultFileBufferedReader.readLine()) != null) {
                 newFileAsList.add(line);
             }
-            defaultFileReader.reset();
+            //defaultFileReader.reset();
 
             //defaultYaml = YamlConfiguration.loadConfiguration(defaultFileReader);
             updateInstructions = YamlConfiguration.loadConfiguration(updateInstructionsReader);
@@ -62,7 +62,7 @@ public class ConfigUpdater extends JavaPlugin {
     }
 
     private static long getNewConfigVersion(Plugin plugin) {
-        try (final InputStream in = plugin.getResource("/config-version.txt");
+        try (final InputStream in = plugin.getResource("config-version.txt");
              final BufferedReader reader = new BufferedReader(new InputStreamReader(in))
         ) {
             return Long.parseLong(reader.readLine());
@@ -72,7 +72,7 @@ public class ConfigUpdater extends JavaPlugin {
         }
     }
 
-    public static boolean needsUpdate(Plugin plugin) {
+    public boolean needsUpdate() {
         return plugin.getConfig().getLong("config-version") < getNewConfigVersion(plugin);
     }
 
@@ -85,6 +85,10 @@ public class ConfigUpdater extends JavaPlugin {
     }
 
     public void update() {
+        if(!needsUpdate()) return;
+
+        plugin.getLogger().info("Updating " + fileName + " to newest version...");
+
         file.delete();
         //plugin.saveResource(fileName, true);
 
@@ -133,10 +137,14 @@ public class ConfigUpdater extends JavaPlugin {
                 }
 
                 newConfig.add(key + ": " + quotes + value + quotes);
+                continue;
             }
+
+            newConfig.add(line);
         }
 
         save(newConfig);
+        plugin.getLogger().info("Successfully updated " + fileName+" :)");
     }
 
     private String getQuotes(String oldKey) {

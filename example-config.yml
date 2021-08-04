@@ -1,3 +1,5 @@
+# Example config file to update AngelChest's config.yml
+
 stringlists:
   - "^dont-spawn-on$"
   - "^only-spawn-in$"
