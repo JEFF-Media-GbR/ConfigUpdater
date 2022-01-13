@@ -2,7 +2,6 @@ package de.jeff_media.configupdater;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -95,6 +94,7 @@ public class ConfigUpdater {
         final Set<String> existingKeys = existingYaml.getKeys(false);
         final List<String> newConfig = new ArrayList<>();
 
+        lines:
         for (String line : newFileAsList) {
 
             String key = line.split(":")[0];
@@ -120,7 +120,7 @@ public class ConfigUpdater {
             if (matches(stringlists, key)) {
                 newConfig.add(line);
                 for (final String entry : existingYaml.getStringList(key)) {
-                    newConfig.add("- " + entry);
+                    newConfig.add("- " + escapeWithQuotes(key, entry));
                 }
                 continue;
             }
@@ -128,7 +128,6 @@ public class ConfigUpdater {
             // Update regular values
             for (final String oldKey : existingKeys) {
                 if (!line.startsWith(oldKey + ":")) continue;
-                final String quotes = getQuotes(key);
                 String value = Objects.requireNonNull(existingYaml.get(key)).toString();
 
                 // Escape newlines
@@ -136,8 +135,8 @@ public class ConfigUpdater {
                     value = value.replaceAll("\n", "\\\\n");
                 }
 
-                newConfig.add(key + ": " + quotes + value + quotes);
-                continue;
+                newConfig.add(key + ": " + escapeWithQuotes(key, value));
+                continue lines;
             }
 
             newConfig.add(line);
@@ -147,9 +146,11 @@ public class ConfigUpdater {
         plugin.getLogger().info("Successfully updated " + fileName+" :)");
     }
 
-    private String getQuotes(String oldKey) {
-        if (matches(doublequotes, oldKey)) return "\"";
-        return "";
+    private String escapeWithQuotes(String oldKey, String value) {
+        String quotes = "";
+        StringBuilder result = new StringBuilder();
+        if (matches(doublequotes, oldKey)) quotes = "\"";
+        return result.append(quotes).append(value.replace("\"","\\\"")).append(quotes).toString();
     }
 
     private void save(List<String> newConfig) {
